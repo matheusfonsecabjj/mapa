@@ -19,42 +19,32 @@
     </script>
 </head>
 <body>
-    <body>
-        <nav>
-            <div class="logo">
-                <img src="logo.png" alt="Logo"> <!-- Substitua 'sua-imagem.png' pelo caminho da sua imagem -->
-            </div>
-            <div class="menu-toggle" onclick="toggleMenu()">
-                <div></div>
-                <div></div>
-                <div></div>
-            </div>
-            <div class="menu">
-                <a href="https://matheusfonsecabjj.github.io/home/">Home</a>
+    <nav>
+        <div class="logo">
+            <img src="logo.png" alt="Logo"> <!-- Substitua 'sua-imagem.png' pelo caminho da sua imagem -->
+        </div>
+        <div class="menu-toggle" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="menu">
+            <a href="https://matheusfonsecabjj.github.io/home/">Home</a>
             <a href="https://matheusfonsecabjj.github.io/entrada/">Entrada</a>
             <a href="https://matheusfonsecabjj.github.io/saida/">Saída</a>
             <a href="https://matheusfonsecabjj.github.io/lista/">Listagem</a>
             <a href="https://matheusfonsecabjj.github.io/mapa/">Mapeamento</a>
-            </div>
-        </nav>
+        </div>
+    </nav>
     
-        <script>
-            function toggleMenu() {
-                const menu = document.querySelector('nav .menu');
-                menu.classList.toggle('active');
-            }
-        </script>
-
-
-
-    <br><br>
-
     <script>
         function toggleMenu() {
             const menu = document.querySelector('nav .menu');
             menu.classList.toggle('active');
         }
     </script>
+
+    <br><br>
 
     <div class="filter-container">
         <label for="skuInput">Digite o SKU para adicionar à lista de exclusão: </label>
@@ -97,7 +87,7 @@
     <button id="btnGerarRelatorio" style="display: none;" onclick="gerarRelatorio()">Gerar Relatório (Excel)</button>
 
     <script>
-        let produtosAExcluir = JSON.parse(localStorage.getItem('produtosAExcluir')) || []; // Carrega os produtos do localStorage
+        let produtosAExcluir = JSON.parse(localStorage.getItem('produtosAExcluir1')) || []; // Usando chave 'produtosAExcluir1' para esta página
         let corredor = ''; // Variável para armazenar o corredor
         let vaga = ''; // Variável para armazenar a vaga
 
@@ -119,7 +109,7 @@
                     produto.corredor = corredor; // Atribui o corredor
                     produto.vaga = vaga; // Atribui a vaga
                     produtosAExcluir.push(produto); // Adiciona o produto à lista de exclusão
-                    localStorage.setItem('produtosAExcluir', JSON.stringify(produtosAExcluir)); // Salva no localStorage
+                    localStorage.setItem('produtosAExcluir1', JSON.stringify(produtosAExcluir)); // Salva no localStorage com chave específica
                     atualizarListaExclusao(); // Atualiza a lista de exclusão exibida
                     document.getElementById('skuInput').value = ''; // Limpa o campo de SKU
                 } else {
@@ -167,7 +157,7 @@
         // Função para remover um produto da lista de exclusão
         function removerProdutoDeExclusao(sku) {
             produtosAExcluir = produtosAExcluir.filter(produto => produto.sku !== sku); // Remove o produto da lista
-            localStorage.setItem('produtosAExcluir', JSON.stringify(produtosAExcluir)); // Atualiza o localStorage
+            localStorage.setItem('produtosAExcluir1', JSON.stringify(produtosAExcluir)); // Atualiza o localStorage
             atualizarListaExclusao(); // Atualiza a tabela exibida
         }
 
@@ -184,48 +174,35 @@
                 localStorage.setItem('produtos', JSON.stringify(produtos)); // Atualiza o localStorage
                 alert('Produtos excluídos com sucesso!');
                 produtosAExcluir = []; // Limpa a lista de produtos a excluir
-                localStorage.setItem('produtosAExcluir', JSON.stringify(produtosAExcluir)); // Atualiza o localStorage
+                localStorage.setItem('produtosAExcluir1', JSON.stringify(produtosAExcluir)); // Atualiza o localStorage
                 atualizarListaExclusao(); // Atualiza a tabela exibida
             }
         }
 
-        // Função para fixar os campos de corredor e vaga
-        function fixarCampos() {
-            corredor = document.getElementById('corredorInput').value;
-            vaga = document.getElementById('vagaInput').value;
-
-            // Verifica se ambos os campos estão preenchidos
-            if (!corredor || !vaga) {
-                alert("Por favor, preencha os campos de Corredor e Vaga.");
-                return;
-            }
-
-            document.getElementById('corredorInput').value = ''; // Limpa o campo de Corredor
-            document.getElementById('vagaInput').value = ''; // Limpa o campo de Vaga
+        // Função para limpar a lista de produtos a excluir
+        function limparLista() {
+            produtosAExcluir = []; // Limpa a lista de produtos
+            localStorage.setItem('produtosAExcluir1', JSON.stringify(produtosAExcluir)); // Atualiza o localStorage
+            atualizarListaExclusao(); // Atualiza a tabela exibida
         }
 
         // Função para gerar o relatório em Excel
         function gerarRelatorio() {
-            const ws = XLSX.utils.table_to_sheet(document.getElementById('tabelaProdutosExclusao')); // Converte a tabela HTML para uma planilha
-            const wb = XLSX.utils.book_new(); // Cria um novo arquivo de planilha
-            XLSX.utils.book_append_sheet(wb, ws, 'Produtos para Excluir'); // Adiciona a planilha ao arquivo
-            XLSX.writeFile(wb, 'relatorio_produtos_para_excluir.xlsx'); // Gera o arquivo Excel e solicita o download
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(produtosAExcluir);
+            XLSX.utils.book_append_sheet(wb, ws, 'Produtos Excluídos');
+            XLSX.writeFile(wb, 'relatorio_produtos_excluidos.xlsx');
         }
 
-        // Função para limpar a lista de produtos a serem excluídos
-        function limparLista() {
-            const confirmacao = confirm('Tem certeza que deseja limpar toda a lista de exclusão?');
-            if (confirmacao) {
-                produtosAExcluir = []; // Limpa a lista de produtos a excluir
-                localStorage.setItem('produtosAExcluir', JSON.stringify(produtosAExcluir)); // Atualiza o localStorage
-                atualizarListaExclusao(); // Atualiza a tabela exibida
-                alert('Lista de exclusão limpa com sucesso!');
-            }
+        // Função para fixar as variáveis de corredor e vaga
+        function fixarCampos() {
+            corredor = document.getElementById('corredorInput').value;
+            vaga = document.getElementById('vagaInput').value;
+            alert(`Corredor: ${corredor}, Vaga: ${vaga} foram fixados.`);
         }
 
-        // Inicializa a página carregando a lista de exclusão
+        // Atualiza a lista ao carregar a página
         atualizarListaExclusao();
     </script>
-
 </body>
 </html>
