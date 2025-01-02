@@ -8,6 +8,15 @@
     <link rel="stylesheet" type="text/css" href="logocss.css" media="screen" />
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script> <!-- CDN para biblioteca xlsx -->
+     <script>
+        // Verificar se o usuário está logado
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+
+        // Se não estiver logado, redireciona para a página de login
+        if (!isLoggedIn) {
+            window.location.href = "https://matheusfonsecabjj.github.io/login/"; // Redireciona para o login
+        }
+    </script>
 </head>
 <body>
     <body>
